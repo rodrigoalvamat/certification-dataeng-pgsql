@@ -8,10 +8,14 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 
-database = 'postgresql+psycopg2://student:student@127.0.0.1/sparkifydb'
-#database = 'postgresql+psycopg2://erxsjqjd:OhDRrRbv8b59vECc08ENtqtG3rFekShP@heffalump.db.elephantsql.com/erxsjqjd'
+#database = 'postgresql+psycopg2://student:student@127.0.0.1/sparkifydb'
 
+username = st.secrets.pgslqcloud.username
+password = st.secrets.pgslqcloud.username
+host = 'heffalump.db.elephantsql.com'
+database = username
 
+database = f'postgresql+psycopg2://{username}:{password}@{host}/{database}'
 engine = create_engine(database)
 
 query = """
