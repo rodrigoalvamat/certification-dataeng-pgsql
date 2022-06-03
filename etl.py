@@ -65,7 +65,7 @@ def process_log_file(cur, filepath):
     for index, row in df.iterrows():
         
         # get songid and artistid from song and artist tables
-        cur.execute(song_select, (row.song, row.artist, row.length))
+        cur.execute(song_select, (row.song, row.length, row.artist))
         results = cur.fetchone()
         
         if results:
@@ -74,7 +74,7 @@ def process_log_file(cur, filepath):
             songid, artistid = None, None
 
         # insert songplay record
-        songplay_data = [row.level, row.location, row.userAgent, artistid, row.sessionId, songid, row.ts, row.userId]
+        songplay_data = [row.level, row.location, row.sessionId, row.userAgent, row.ts, row.userId, artistid, songid]
         cur.execute(songplay_table_insert, songplay_data)
 
 
@@ -107,8 +107,8 @@ def process_data(conn, filepath, func):
 def main():
     """
     - Create a new database session.
-    - Processes all song JSON files data.
-    - Processes all log JSON files data.
+    - Processes all JSON files from song_data folder.
+    - Processes all JSON files from log_data folder.
     - Closes the database session.
     """
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
