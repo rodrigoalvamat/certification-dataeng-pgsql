@@ -33,4 +33,4 @@ st.write("""
 # Sparkify Dashboard
 """)
 
-st.bar_chart(songplays.head(20))
+st.bar_chart(songplays['plays'].head(20))
