@@ -1,4 +1,5 @@
 # system libs
+import os
 import sys
 
 # sql libs
@@ -17,8 +18,10 @@ def create_database(cloud):
 
     if cloud:
         # cloud database connection configuration
-        default_db = "host=heffalump.db.elephantsql.com dbname=erxsjqjd user=erxsjqjd password=OhDRrRbv8b59vECc08ENtqtG3rFekShP"
-        sparkify_db = default_db
+        host = os.environ['PGSQL_CLOUD_HOST']
+        username = os.environ['PGSQL_CLOUD_USERNAME'] 
+        password = os.environ['PGSQL_CLOUD_PASSWORD']
+        sparkify_db = f"host={host} dbname={username} user={username} password={password}"
     else:
         # local database connection configuration
         default_db = "host=127.0.0.1 dbname=studentdb user=student password=student"

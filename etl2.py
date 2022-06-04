@@ -298,11 +298,16 @@ def main(cloud):
         cloud: Use the cloud database connection instead of local
     """
     if cloud:
-        conf = "host=heffalump.db.elephantsql.com dbname=erxsjqjd user=erxsjqjd password=OhDRrRbv8b59vECc08ENtqtG3rFekShP"
+        # cloud database connection configuration
+        host = os.environ['PGSQL_CLOUD_HOST']
+        username = os.environ['PGSQL_CLOUD_USERNAME'] 
+        password = os.environ['PGSQL_CLOUD_PASSWORD']
+        dbconf = f"host={host} dbname={username} user={username} password={password}"
     else:
-        conf = "host=127.0.0.1 dbname=sparkifydb user=student password=student"
+        # local database connection configuration
+        dbconf = "host=127.0.0.1 dbname=sparkifydb user=student password=student"
 
-    conn = psycopg2.connect(conf)
+    conn = psycopg2.connect(dbconf)
 
     process_data(dir='data/song_data', conn=conn, func=process_song_data)
     process_data(dir='data/log_data', conn=conn, func=process_log_data)
