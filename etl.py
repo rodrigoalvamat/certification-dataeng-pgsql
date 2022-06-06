@@ -1,6 +1,7 @@
 # system libs
 import os
 import glob
+from timeit import default_timer as timer
 
 # etl/eda libs
 import pandas as pd
@@ -111,12 +112,20 @@ def main():
     - Processes all JSON files from log_data folder.
     - Closes the database session.
     """
+    # initialize the timer
+    start = timer()
+    
+    # connect to the database
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
-
+    # process JSON files
     process_data(conn, filepath='data/song_data', func=process_song_file)
     process_data(conn, filepath='data/log_data', func=process_log_file)
-
+    # close the connection
     conn.close()
+
+    # print the time it took to run the script
+    end = timer()
+    print(f'ETL time: {round(end - start, 2)} seconds')
 
 
 if __name__ == "__main__":

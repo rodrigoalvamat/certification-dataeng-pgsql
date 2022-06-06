@@ -3,6 +3,7 @@ import glob
 from io import StringIO
 import os
 import sys
+from timeit import default_timer as timer
 
 # etl/eda libs
 import pandas as pd
@@ -297,6 +298,9 @@ def main(cloud):
     Arguments:
         cloud: Use the cloud database connection instead of local
     """
+    # initialize the timer
+    start = timer()
+
     if cloud:
         # cloud database connection configuration
         host = os.environ['PGSQL_CLOUD_HOST']
@@ -306,13 +310,18 @@ def main(cloud):
     else:
         # local database connection configuration
         dbconf = "host=127.0.0.1 dbname=sparkifydb user=student password=student"
-
+    
+    # connect to the database
     conn = psycopg2.connect(dbconf)
-
+    # process JSON files
     process_data(dir='data/song_data', conn=conn, func=process_song_data)
     process_data(dir='data/log_data', conn=conn, func=process_log_data)
-
+    # close the connection
     conn.close()
+    
+    # print the time it took to run the script
+    end = timer()
+    print(f'ETL time: {round(end - start, 2)} seconds')
 
 
 # PROGRAM ENTRY POINT

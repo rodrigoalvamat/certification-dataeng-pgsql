@@ -1,6 +1,7 @@
 # system libs
 import os
 import sys
+from timeit import default_timer as timer
 
 # sql libs
 import psycopg2
@@ -48,6 +49,14 @@ def drop_tables(cur, conn):
     Drops each table using the queries in `drop_table_queries` list.
     """
     for query in drop_table_queries:
+        cur.execute(query)
+        conn.commit()
+
+def drop_functions(cur, conn):
+    """
+    Drops each function using the queries in `drop_function_queries` list.
+    """
+    for query in drop_function_queries:
         cur.execute(query)
         conn.commit()
 
@@ -100,15 +109,22 @@ def main(cloud):
     Arguments:
         cloud: Use the cloud database connection instead of local.
     """
+    # initialize the timer
+    start = timer()
+    # create a cursor and connect to the database
     cur, conn = create_database(cloud)
-
+    # execute all sql statements
     drop_tables(cur, conn)
+    drop_functions(cur, conn)
     drop_types(cur, conn)
     create_types(cur, conn)
     create_tables(cur, conn)
     create_functions(cur, conn)
-
+    # close the connection
     conn.close()
+    # print the time it took to run the script
+    end = timer()
+    print(f'Create tables time: {round(end - start, 2)} seconds')
 
 
 if __name__ == "__main__":

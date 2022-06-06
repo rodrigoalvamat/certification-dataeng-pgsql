@@ -17,13 +17,17 @@ CREATE TYPE SONG_ARTIST AS (
 );
 """
 
-# DROP TABLE IF EXISTSS
+# DROP TABLE IF EXISTS
 
 songplay_table_drop = "DROP TABLE IF EXISTS songplays"
 user_table_drop = "DROP TABLE IF EXISTS users"
 song_table_drop = "DROP TABLE IF EXISTS songs"
 artist_table_drop = "DROP TABLE IF EXISTS artists"
 time_table_drop = "DROP TABLE IF EXISTS time"
+
+# DROP FUNCTION IF EXISTS
+
+song_artist_ids_drop = "DROP FUNCTION IF EXISTS song_artist_ids"
 
 # CREATE TABLES
 
@@ -181,8 +185,13 @@ create_function_queries = [song_artist_ids]
 
 create_table_queries = [user_table_create, artist_table_create,
                         time_table_create, song_table_create, songplay_table_create]
+                        
 create_type_queries = [gender_type_create,
                        level_type_create, song_artist_type_create]
+
 drop_table_queries = [songplay_table_drop, user_table_drop,
                       song_table_drop, artist_table_drop, time_table_drop]
+
+drop_function_queries = [song_artist_ids_drop]
+
 drop_type_queries = [gender_type_drop, level_type_drop, song_artist_type_drop]
