@@ -203,11 +203,15 @@ The [Streamlit](https://streamlit.io) application framework was used to build an
 <br/>
 <br/>
 
+### Dashboard Screenshot
+![Sparkify Dashboard](./images/dashboard.png)
+<br/>
+<br/>
+
 There were some limitations to developing a more interactive dashboard, with a greater variety of information, because of the missing data in the JSON files and some restrictions defined by the project requirements. However, several improvements are on the roadmap to overcome this issues:
 
-### Next Realease Roadmap
+### Next Release Roadmap
 - Download a larger sample of the [Million Song Dataset](http://millionsongdataset.com) and use the [event simulator](https://github.com/Interana/eventsim) to improve the dataset quality.
 - Use the [Google Maps API Python Client](https://github.com/googlemaps/google-maps-services-python) geocode method to get the latitude and longitude for the songplays' locations. 
-- Full source code refactoring to set a centralized **state management** inspired by the [Redux Framework](https://redux.js.org/).
 - Create interactive graph and vizualization components for all dimensions (songs, artists, users, time) of the fact table (songplays).
 - Docstring documentation of the dashboard source code.
