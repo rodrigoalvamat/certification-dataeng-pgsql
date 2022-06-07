@@ -176,12 +176,16 @@ python -m etl2 --cloud
 | 5 Executions Mean (sec) | [etl.py](./etl.py) | [etl2.py](./etl2.py) |
 |-------------------------|--------------------|----------------------|
 | Local database          | 30.68              | 1.64                 |
-| Cloud database          | 31.44              | 4.72                 |
+| Cloud database          | Pending            | Pending              |
 <br/>
 
 **Note:** These results can vary remarkably according to your local computer hardware and the cloud provider service.
 <br/>
 <br/>
+
+## Auto-generate API Documentation
+
+The [pdoc](https://pdoc3.github.io/pdoc/) documentation generator was used to output the [HTML docs](./docs/index.html) from the source code ```DOCSTRIGS```.
 
 ## Database Schema Validation and Sanity Tests
 

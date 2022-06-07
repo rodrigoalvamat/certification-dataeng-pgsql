@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>sparkify-pgsql.etl2 API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>sparkify-pgsql.etl2</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># system libs
+import glob
+from io import StringIO
+import os
+import sys
+from timeit import default_timer as timer
+
+# etl/eda libs
+import pandas as pd
+
+# sql libs
+import psycopg2
+from sql_queries import *
+
+# suppress warnings
+import warnings
+warnings.filterwarnings(&#34;ignore&#34;)
+
+
+&#34;&#34;&#34;Table column names.&#34;&#34;&#34;
+TABLE = {
+    &#39;artists&#39;: [&#39;artist_id&#39;, &#39;artist_name&#39;, &#39;artist_location&#39;, &#39;artist_latitude&#39;, &#39;artist_longitude&#39;],
+    &#39;songs&#39;: [&#39;song_id&#39;, &#39;title&#39;, &#39;year&#39;, &#39;duration&#39;, &#39;artist_id&#39;],
+    &#39;time&#39;: [&#39;timestamp&#39;, &#39;hour&#39;, &#39;day&#39;, &#39;week&#39;, &#39;month&#39;, &#39;year&#39;, &#39;weekday&#39;],
+    &#39;users&#39;: [&#39;userId&#39;, &#39;firstName&#39;, &#39;lastName&#39;, &#39;gender&#39;, &#39;level&#39;],
+    &#39;songplays&#39;: [&#39;level&#39;, &#39;location&#39;, &#39;sessionId&#39;, &#39;userAgent&#39;, &#39;ts&#39;, &#39;userId&#39;]
+    # songplays [&#39;artist_id&#39;, &#39;song_id&#39;] will JOIN after SQL function call
+}
+
+
+# FILE PATHS
+
+def get_files(dir):
+    &#34;&#34;&#34;
+    Get a list of all JSON file paths in a directory and it&#39;s subdirectories.
+
+    Args:
+
+    `folder`: The path of the JSON root directory
+
+    Returns:
+
+    The list of JSON file paths
+    &#34;&#34;&#34;
+    # get all files matching extension from directory
+    all_files = []
+    for root, dirs, files in os.walk(dir):
+        files = glob.glob(os.path.join(root, &#39;*.json&#39;))
+        for f in files:
+            all_files.append(os.path.abspath(f))
+
+    return all_files
+
+
+# DATA FRAME CONCATENATION OF JSON FILES
+
+def get_dataframe(files):
+    &#34;&#34;&#34;
+    Concatenates all JSON files into a sigle DataFrame.
+
+    Args:
+
+    `files`: The list of JSON file paths
+
+    Returns:
+
+    The concatenated DataFrame of all JSON files
+    &#34;&#34;&#34;
+    dfs = []
+    for f in files:
+        df = pd.read_json(f, lines=True)
+        dfs.append(df)
+
+    data = pd.concat(dfs, ignore_index=True)
+
+    # trim all strings to avoid query mismatch
+    strings = list(data.select_dtypes(include=[&#39;object&#39;]).columns)
+    data[strings] = data[strings].apply(lambda x: x.str.strip())
+
+    return data
+
+
+# SQL BATCH INSERTS (copy_from for performance)
+
+def copy_data(data, table, cursor, columns=None):
+    &#34;&#34;&#34;
+    Processes the data from a DataFrame and copy to the database table.
+
+    Args:
+
+    `data`: The dataframe containing the data
+
+    `table`: The database table name
+
+    `cursor`: The database cursor
+
+    `columns`: Optional list of columns to copy
+    &#34;&#34;&#34;
+    print(f&#39;Copying {data.shape[0]} records to table {table}...&#39;)
+
+    # creates a CSV buffer from the DataFrame
+    csv_buffer = StringIO()
+    data.to_csv(csv_buffer, index=False, header=False, sep=&#39;|&#39;, na_rep=&#39;NULL&#39;)
+    csv_buffer.seek(0)
+
+    # copy records from the CSV buffer to the database table
+    cursor.copy_from(csv_buffer, table, sep=&#39;|&#39;, null=&#39;NULL&#39;, columns=columns)
+    cursor.connection.commit()
+
+    # closes the buffer
+    csv_buffer.close()
+
+
+# TABLE INSERTION PROCESSING
+
+def process_table_artists(data, cursor):
+    &#34;&#34;&#34;
+    Processes the artists table data.
+
+    Args:
+
+    `data`: The DataFrame containing artists data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # copy artists records to the database table
+    artists_data = data[TABLE[&#39;artists&#39;]].drop_duplicates(
+        subset=[&#39;artist_id&#39;], keep=&#39;first&#39;)
+    copy_data(artists_data, &#39;artists&#39;, cursor)
+
+
+def process_table_songs(data, cursor):
+    &#34;&#34;&#34;
+    Processes the songs table data.
+
+    Args:
+
+    `data`: The DataFrame containing songs data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # copy songs records to the database table
+    songs_data = data[TABLE[&#39;songs&#39;]].drop_duplicates(
+        subset=[&#39;song_id&#39;], keep=&#39;first&#39;)
+    copy_data(songs_data, &#39;songs&#39;, cursor)
+
+
+def process_table_time(data, cursor):
+    &#34;&#34;&#34;
+    Processes the time table data.
+
+    Args:
+
+    `data`: The DataFrame containing time data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # copy time records to the database table
+    time_df = pd.DataFrame(data.to_list(), columns=TABLE[&#39;time&#39;]).drop_duplicates(
+        subset=[&#39;timestamp&#39;], keep=&#39;first&#39;)
+    copy_data(time_df, &#39;time&#39;, cursor)
+
+
+def process_table_users(data, cursor):
+    &#34;&#34;&#34;
+    Processes the users table data.
+
+    Args:
+
+    `data`: The DataFrame containing users data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # copy users records to the database table
+    users_data = data[TABLE[&#39;users&#39;]].drop_duplicates(
+        subset=[&#39;userId&#39;], keep=&#39;first&#39;)
+    copy_data(users_data, &#39;users&#39;, cursor)
+
+
+def process_table_songplays(data, cursor):
+    &#34;&#34;&#34;
+    Processes the songplays table data.
+
+    Args:
+
+    `data`: The DataFrame containing songplays data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # copy songplays records to the database table
+    columns = [&#39;level&#39;, &#39;location&#39;, &#39;session_id&#39;, &#39;user_agent&#39;,
+               &#39;start_time&#39;, &#39;user_id&#39;, &#39;artist_id&#39;, &#39;song_id&#39;]
+    copy_data(data, &#39;songplays&#39;, cursor, columns=columns)
+
+
+# SQL FUNCTION / STORED PROCEDURE (batch query and fetch for performance)
+
+def get_song_artist_ids(data, cursor):
+    &#34;&#34;&#34;
+    Gets the song and artist IDs from the database function.
+
+    Args:
+
+    `data`: The DataFrame containing songplays data
+
+    `cursor`: The database cursor
+
+    Returns:
+
+    The DataFrame containing the song and artist IDs
+    &#34;&#34;&#34;
+    # Query the song_artist_ids function with a list of song, length and artist
+    func = &#34;SELECT * FROM song_artist_ids(CAST (%s AS SONG_ARTIST[]))&#34;
+    param = data[[&#39;song&#39;, &#39;length&#39;, &#39;artist&#39;]].to_records(index=True).tolist()
+
+    cursor.execute(func, (param,))
+
+    # fetch the results in batches of 2000
+    ids = []
+    while True:
+        records = cursor.fetchmany(size=2000)
+        if not records:
+            break
+        else:
+            ids[-1:-1] = records
+
+    # convert the list of ids to a DataFrame
+    ids_df = pd.DataFrame(ids, columns=[&#39;index&#39;, &#39;song_id&#39;, &#39;artist_id&#39;])
+    ids_df.set_index(&#39;index&#39;, inplace=True)
+
+    cursor.connection.commit()
+
+    return ids_df
+
+
+# ETL PROCESSING - DEALING WITH NULL VALUES
+
+def generate_user_id(data):
+    &#34;&#34;&#34;
+    Generates a userId for each user with null id.
+    Creates an unique key based on the columns first name, last name, gender and level.
+
+    Args:
+
+    `data`: The DataFrame containing users data
+
+    Returns:
+
+    The Series of generated user ids
+    &#34;&#34;&#34;
+    # create an unique key identifier
+    data[&#39;userKey&#39;] = data.apply(
+        lambda x: x[&#39;firstName&#39;] + x[&#39;lastName&#39;] + x[&#39;gender&#39;] + x[&#39;level&#39;], axis=1)
+    # get the last integer number used as an userId
+    maxId = data[&#39;userId&#39;].max()
+    # get the unique keys generated for the users with null id
+    keys = data[data[&#39;userId&#39;].isnull()][&#39;userKey&#39;].unique()
+    # create a dictionary where the key is the userKey and the value is the next generated userId
+    ids = dict(zip(keys, [x for x in range(maxId + 1, maxId + len(keys) + 1)]))
+    # replace the null userId with the generated id
+    return data.apply(lambda x: ids.get(x[&#39;userKey&#39;]) if pd.isnull(x[&#39;userId&#39;]) else x[&#39;userId&#39;], axis=1)
+
+
+# ETL PROCESSING - EXTRACTING DATA FROM JSON AND LOADING TO DATABASE
+
+def process_song_data(data, cursor):
+    &#34;&#34;&#34;
+    Processes the song data and inserts into the artists and songs tables.
+
+    Args:
+
+    `data`: The DataFrame containing songs and artists data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    process_table_artists(data, cursor)
+    process_table_songs(data, cursor)
+
+
+# ETL PROCESSING - FILTERING, TYPECASTING, MAPPING AND MERGING DATA
+
+def process_log_data(data, cursor):
+    &#34;&#34;&#34;
+    Processes the song data and inserts it into the database.
+
+    Args:
+
+    `data`: The DataFrame containing time, user and songlplay data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # filter by NextSong action
+    data = data[data[&#39;page&#39;] == &#39;NextSong&#39;]
+
+    # convert timestamp column to datetime
+    data[&#39;ts&#39;] = pd.to_datetime(data[&#39;ts&#39;], unit=&#39;ms&#39;)
+    time_df = data[&#39;ts&#39;].apply(
+        lambda x: [x, x.hour, x.day, x.week, x.month, x.year, x.day_name()])
+
+    # convert userId to int and generates a userId for each user with null id
+    data[&#39;userId&#39;] = data[&#39;userId&#39;].astype(&#39;Int64&#39;)
+    data[&#39;userId&#39;] = generate_user_id(data)
+
+    # get the song and artist IDs to build the songplays DataFrame
+    ids_df = get_song_artist_ids(data, cursor)
+    songplays_df = data[TABLE[&#39;songplays&#39;]].join(
+        ids_df[[&#39;artist_id&#39;, &#39;song_id&#39;]])
+
+    # copy time, users and songplays records to the database tables
+    process_table_time(time_df, cursor)
+    process_table_users(data, cursor)
+    process_table_songplays(songplays_df, cursor)
+
+
+# ETL JOB EXECUTOR
+
+def process_data(dir, conn, func):
+    &#34;&#34;&#34;
+    Reads multiple JSON files and executes the corresponding data processing function.
+
+    Args:
+
+    `dir`: The path of the JSON root directory
+
+    `conn`: The database connection
+
+    `func`: The function to execute for each JSON file
+    &#34;&#34;&#34;
+    # get all files matching extension from directory
+    all_files = get_files(dir)
+
+    # get total number of files found
+    num_files = len(all_files)
+    print(&#39;{} files found in {}&#39;.format(num_files, dir))
+
+    # get a dataframe of all files
+    data = get_dataframe(all_files)
+    print(&#39;{} registers found in {}&#39;.format(data.shape[0], dir))
+
+    func(data, conn.cursor())
+
+
+# ETL JOB CONFIGURATION AND HOST SELECTION
+
+def main(cloud):
+    &#34;&#34;&#34;
+    - Selects the database host from the command line argument --cloud.
+    - Create a new database session.
+    - Processes all JSON files from song_data folder.
+    - Processes all JSON files from log_data folder.
+    - Closes the database session.
+
+    Args:
+
+    `cloud`: Use the cloud database connection instead of local
+    &#34;&#34;&#34;
+    # initialize the timer
+    start = timer()
+
+    if cloud:
+        # cloud database connection configuration
+        host = os.environ[&#39;PGSQL_CLOUD_HOST&#39;]
+        username = os.environ[&#39;PGSQL_CLOUD_USERNAME&#39;]
+        password = os.environ[&#39;PGSQL_CLOUD_PASSWORD&#39;]
+        dbconf = f&#34;host={host} dbname={username} user={username} password={password}&#34;
+    else:
+        # local database connection configuration
+        dbconf = &#34;host=127.0.0.1 dbname=sparkifydb user=student password=student&#34;
+
+    # connect to the database
+    conn = psycopg2.connect(dbconf)
+    # process JSON files
+    process_data(dir=&#39;data/song_data&#39;, conn=conn, func=process_song_data)
+    process_data(dir=&#39;data/log_data&#39;, conn=conn, func=process_log_data)
+    # close the connection
+    conn.close()
+
+    # print the time it took to run the script
+    end = timer()
+    print(f&#39;ETL time: {round(end - start, 2)} seconds&#39;)
+
+
+# PROGRAM ENTRY POINT
+
+if __name__ == &#34;__main__&#34;:
+    # calls the main function with the corresponding database host argument
+    # getopt or argpase were not used for simplicity
+    if len(sys.argv) == 2 and sys.argv[1] == &#39;--cloud&#39;:
+        main(cloud=True)
+    else:
+        main(cloud=False)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="sparkify-pgsql.etl2.copy_data"><code class="name flex">
+<span>def <span class="ident">copy_data</span></span>(<span>data, table, cursor, columns=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Processes the data from a DataFrame and copy to the database table.</p>
+<p>Args:</p>
+<p><code>data</code>: The dataframe containing the data</p>
+<p><code>table</code>: The database table name</p>
+<p><code>cursor</code>: The database cursor</p>
+<p><code>columns</code>: Optional list of columns to copy</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def copy_data(data, table, cursor, columns=None):
+    &#34;&#34;&#34;
+    Processes the data from a DataFrame and copy to the database table.
+
+    Args:
+
+    `data`: The dataframe containing the data
+
+    `table`: The database table name
+
+    `cursor`: The database cursor
+
+    `columns`: Optional list of columns to copy
+    &#34;&#34;&#34;
+    print(f&#39;Copying {data.shape[0]} records to table {table}...&#39;)
+
+    # creates a CSV buffer from the DataFrame
+    csv_buffer = StringIO()
+    data.to_csv(csv_buffer, index=False, header=False, sep=&#39;|&#39;, na_rep=&#39;NULL&#39;)
+    csv_buffer.seek(0)
+
+    # copy records from the CSV buffer to the database table
+    cursor.copy_from(csv_buffer, table, sep=&#39;|&#39;, null=&#39;NULL&#39;, columns=columns)
+    cursor.connection.commit()
+
+    # closes the buffer
+    csv_buffer.close()</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.generate_user_id"><code class="name flex">
+<span>def <span class="ident">generate_user_id</span></span>(<span>data)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates a userId for each user with null id.
+Creates an unique key based on the columns first name, last name, gender and level.</p>
+<p>Args:</p>
+<p><code>data</code>: The DataFrame containing users data</p>
+<p>Returns:</p>
+<p>The Series of generated user ids</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_user_id(data):
+    &#34;&#34;&#34;
+    Generates a userId for each user with null id.
+    Creates an unique key based on the columns first name, last name, gender and level.
+
+    Args:
+
+    `data`: The DataFrame containing users data
+
+    Returns:
+
+    The Series of generated user ids
+    &#34;&#34;&#34;
+    # create an unique key identifier
+    data[&#39;userKey&#39;] = data.apply(
+        lambda x: x[&#39;firstName&#39;] + x[&#39;lastName&#39;] + x[&#39;gender&#39;] + x[&#39;level&#39;], axis=1)
+    # get the last integer number used as an userId
+    maxId = data[&#39;userId&#39;].max()
+    # get the unique keys generated for the users with null id
+    keys = data[data[&#39;userId&#39;].isnull()][&#39;userKey&#39;].unique()
+    # create a dictionary where the key is the userKey and the value is the next generated userId
+    ids = dict(zip(keys, [x for x in range(maxId + 1, maxId + len(keys) + 1)]))
+    # replace the null userId with the generated id
+    return data.apply(lambda x: ids.get(x[&#39;userKey&#39;]) if pd.isnull(x[&#39;userId&#39;]) else x[&#39;userId&#39;], axis=1)</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.get_dataframe"><code class="name flex">
+<span>def <span class="ident">get_dataframe</span></span>(<span>files)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Concatenates all JSON files into a sigle DataFrame.</p>
+<p>Args:</p>
+<p><code>files</code>: The list of JSON file paths</p>
+<p>Returns:</p>
+<p>The concatenated DataFrame of all JSON files</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_dataframe(files):
+    &#34;&#34;&#34;
+    Concatenates all JSON files into a sigle DataFrame.
+
+    Args:
+
+    `files`: The list of JSON file paths
+
+    Returns:
+
+    The concatenated DataFrame of all JSON files
+    &#34;&#34;&#34;
+    dfs = []
+    for f in files:
+        df = pd.read_json(f, lines=True)
+        dfs.append(df)
+
+    data = pd.concat(dfs, ignore_index=True)
+
+    # trim all strings to avoid query mismatch
+    strings = list(data.select_dtypes(include=[&#39;object&#39;]).columns)
+    data[strings] = data[strings].apply(lambda x: x.str.strip())
+
+    return data</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.get_files"><code class="name flex">
+<span>def <span class="ident">get_files</span></span>(<span>dir)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get a list of all JSON file paths in a directory and it's subdirectories.</p>
+<p>Args:</p>
+<p><code>folder</code>: The path of the JSON root directory</p>
+<p>Returns:</p>
+<p>The list of JSON file paths</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_files(dir):
+    &#34;&#34;&#34;
+    Get a list of all JSON file paths in a directory and it&#39;s subdirectories.
+
+    Args:
+
+    `folder`: The path of the JSON root directory
+
+    Returns:
+
+    The list of JSON file paths
+    &#34;&#34;&#34;
+    # get all files matching extension from directory
+    all_files = []
+    for root, dirs, files in os.walk(dir):
+        files = glob.glob(os.path.join(root, &#39;*.json&#39;))
+        for f in files:
+            all_files.append(os.path.abspath(f))
+
+    return all_files</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.get_song_artist_ids"><code class="name flex">
+<span>def <span class="ident">get_song_artist_ids</span></span>(<span>data, cursor)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the song and artist IDs from the database function.</p>
+<p>Args:</p>
+<p><code>data</code>: The DataFrame containing songplays data</p>
+<p><code>cursor</code>: The database cursor</p>
+<p>Returns:</p>
+<p>The DataFrame containing the song and artist IDs</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_song_artist_ids(data, cursor):
+    &#34;&#34;&#34;
+    Gets the song and artist IDs from the database function.
+
+    Args:
+
+    `data`: The DataFrame containing songplays data
+
+    `cursor`: The database cursor
+
+    Returns:
+
+    The DataFrame containing the song and artist IDs
+    &#34;&#34;&#34;
+    # Query the song_artist_ids function with a list of song, length and artist
+    func = &#34;SELECT * FROM song_artist_ids(CAST (%s AS SONG_ARTIST[]))&#34;
+    param = data[[&#39;song&#39;, &#39;length&#39;, &#39;artist&#39;]].to_records(index=True).tolist()
+
+    cursor.execute(func, (param,))
+
+    # fetch the results in batches of 2000
+    ids = []
+    while True:
+        records = cursor.fetchmany(size=2000)
+        if not records:
+            break
+        else:
+            ids[-1:-1] = records
+
+    # convert the list of ids to a DataFrame
+    ids_df = pd.DataFrame(ids, columns=[&#39;index&#39;, &#39;song_id&#39;, &#39;artist_id&#39;])
+    ids_df.set_index(&#39;index&#39;, inplace=True)
+
+    cursor.connection.commit()
+
+    return ids_df</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>cloud)</span>
+</code></dt>
+<dd>
+<div class="desc"><ul>
+<li>Selects the database host from the command line argument &ndash;cloud.</li>
+<li>Create a new database session.</li>
+<li>Processes all JSON files from song_data folder.</li>
+<li>Processes all JSON files from log_data folder.</li>
+<li>Closes the database session.</li>
+</ul>
+<p>Args:</p>
+<p><code>cloud</code>: Use the cloud database connection instead of local</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main(cloud):
+    &#34;&#34;&#34;
+    - Selects the database host from the command line argument --cloud.
+    - Create a new database session.
+    - Processes all JSON files from song_data folder.
+    - Processes all JSON files from log_data folder.
+    - Closes the database session.
+
+    Args:
+
+    `cloud`: Use the cloud database connection instead of local
+    &#34;&#34;&#34;
+    # initialize the timer
+    start = timer()
+
+    if cloud:
+        # cloud database connection configuration
+        host = os.environ[&#39;PGSQL_CLOUD_HOST&#39;]
+        username = os.environ[&#39;PGSQL_CLOUD_USERNAME&#39;]
+        password = os.environ[&#39;PGSQL_CLOUD_PASSWORD&#39;]
+        dbconf = f&#34;host={host} dbname={username} user={username} password={password}&#34;
+    else:
+        # local database connection configuration
+        dbconf = &#34;host=127.0.0.1 dbname=sparkifydb user=student password=student&#34;
+
+    # connect to the database
+    conn = psycopg2.connect(dbconf)
+    # process JSON files
+    process_data(dir=&#39;data/song_data&#39;, conn=conn, func=process_song_data)
+    process_data(dir=&#39;data/log_data&#39;, conn=conn, func=process_log_data)
+    # close the connection
+    conn.close()
+
+    # print the time it took to run the script
+    end = timer()
+    print(f&#39;ETL time: {round(end - start, 2)} seconds&#39;)</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.process_data"><code class="name flex">
+<span>def <span class="ident">process_data</span></span>(<span>dir, conn, func)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Reads multiple JSON files and executes the corresponding data processing function.</p>
+<p>Args:</p>
+<p><code>dir</code>: The path of the JSON root directory</p>
+<p><code>conn</code>: The database connection</p>
+<p><code>func</code>: The function to execute for each JSON file</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_data(dir, conn, func):
+    &#34;&#34;&#34;
+    Reads multiple JSON files and executes the corresponding data processing function.
+
+    Args:
+
+    `dir`: The path of the JSON root directory
+
+    `conn`: The database connection
+
+    `func`: The function to execute for each JSON file
+    &#34;&#34;&#34;
+    # get all files matching extension from directory
+    all_files = get_files(dir)
+
+    # get total number of files found
+    num_files = len(all_files)
+    print(&#39;{} files found in {}&#39;.format(num_files, dir))
+
+    # get a dataframe of all files
+    data = get_dataframe(all_files)
+    print(&#39;{} registers found in {}&#39;.format(data.shape[0], dir))
+
+    func(data, conn.cursor())</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.process_log_data"><code class="name flex">
+<span>def <span class="ident">process_log_data</span></span>(<span>data, cursor)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Processes the song data and inserts it into the database.</p>
+<p>Args:</p>
+<p><code>data</code>: The DataFrame containing time, user and songlplay data</p>
+<p><code>cursor</code>: The database cursor</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_log_data(data, cursor):
+    &#34;&#34;&#34;
+    Processes the song data and inserts it into the database.
+
+    Args:
+
+    `data`: The DataFrame containing time, user and songlplay data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # filter by NextSong action
+    data = data[data[&#39;page&#39;] == &#39;NextSong&#39;]
+
+    # convert timestamp column to datetime
+    data[&#39;ts&#39;] = pd.to_datetime(data[&#39;ts&#39;], unit=&#39;ms&#39;)
+    time_df = data[&#39;ts&#39;].apply(
+        lambda x: [x, x.hour, x.day, x.week, x.month, x.year, x.day_name()])
+
+    # convert userId to int and generates a userId for each user with null id
+    data[&#39;userId&#39;] = data[&#39;userId&#39;].astype(&#39;Int64&#39;)
+    data[&#39;userId&#39;] = generate_user_id(data)
+
+    # get the song and artist IDs to build the songplays DataFrame
+    ids_df = get_song_artist_ids(data, cursor)
+    songplays_df = data[TABLE[&#39;songplays&#39;]].join(
+        ids_df[[&#39;artist_id&#39;, &#39;song_id&#39;]])
+
+    # copy time, users and songplays records to the database tables
+    process_table_time(time_df, cursor)
+    process_table_users(data, cursor)
+    process_table_songplays(songplays_df, cursor)</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.process_song_data"><code class="name flex">
+<span>def <span class="ident">process_song_data</span></span>(<span>data, cursor)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Processes the song data and inserts into the artists and songs tables.</p>
+<p>Args:</p>
+<p><code>data</code>: The DataFrame containing songs and artists data</p>
+<p><code>cursor</code>: The database cursor</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_song_data(data, cursor):
+    &#34;&#34;&#34;
+    Processes the song data and inserts into the artists and songs tables.
+
+    Args:
+
+    `data`: The DataFrame containing songs and artists data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    process_table_artists(data, cursor)
+    process_table_songs(data, cursor)</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.process_table_artists"><code class="name flex">
+<span>def <span class="ident">process_table_artists</span></span>(<span>data, cursor)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Processes the artists table data.</p>
+<p>Args:</p>
+<p><code>data</code>: The DataFrame containing artists data</p>
+<p><code>cursor</code>: The database cursor</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_table_artists(data, cursor):
+    &#34;&#34;&#34;
+    Processes the artists table data.
+
+    Args:
+
+    `data`: The DataFrame containing artists data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # copy artists records to the database table
+    artists_data = data[TABLE[&#39;artists&#39;]].drop_duplicates(
+        subset=[&#39;artist_id&#39;], keep=&#39;first&#39;)
+    copy_data(artists_data, &#39;artists&#39;, cursor)</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.process_table_songplays"><code class="name flex">
+<span>def <span class="ident">process_table_songplays</span></span>(<span>data, cursor)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Processes the songplays table data.</p>
+<p>Args:</p>
+<p><code>data</code>: The DataFrame containing songplays data</p>
+<p><code>cursor</code>: The database cursor</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_table_songplays(data, cursor):
+    &#34;&#34;&#34;
+    Processes the songplays table data.
+
+    Args:
+
+    `data`: The DataFrame containing songplays data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # copy songplays records to the database table
+    columns = [&#39;level&#39;, &#39;location&#39;, &#39;session_id&#39;, &#39;user_agent&#39;,
+               &#39;start_time&#39;, &#39;user_id&#39;, &#39;artist_id&#39;, &#39;song_id&#39;]
+    copy_data(data, &#39;songplays&#39;, cursor, columns=columns)</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.process_table_songs"><code class="name flex">
+<span>def <span class="ident">process_table_songs</span></span>(<span>data, cursor)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Processes the songs table data.</p>
+<p>Args:</p>
+<p><code>data</code>: The DataFrame containing songs data</p>
+<p><code>cursor</code>: The database cursor</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_table_songs(data, cursor):
+    &#34;&#34;&#34;
+    Processes the songs table data.
+
+    Args:
+
+    `data`: The DataFrame containing songs data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # copy songs records to the database table
+    songs_data = data[TABLE[&#39;songs&#39;]].drop_duplicates(
+        subset=[&#39;song_id&#39;], keep=&#39;first&#39;)
+    copy_data(songs_data, &#39;songs&#39;, cursor)</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.process_table_time"><code class="name flex">
+<span>def <span class="ident">process_table_time</span></span>(<span>data, cursor)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Processes the time table data.</p>
+<p>Args:</p>
+<p><code>data</code>: The DataFrame containing time data</p>
+<p><code>cursor</code>: The database cursor</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_table_time(data, cursor):
+    &#34;&#34;&#34;
+    Processes the time table data.
+
+    Args:
+
+    `data`: The DataFrame containing time data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # copy time records to the database table
+    time_df = pd.DataFrame(data.to_list(), columns=TABLE[&#39;time&#39;]).drop_duplicates(
+        subset=[&#39;timestamp&#39;], keep=&#39;first&#39;)
+    copy_data(time_df, &#39;time&#39;, cursor)</code></pre>
+</details>
+</dd>
+<dt id="sparkify-pgsql.etl2.process_table_users"><code class="name flex">
+<span>def <span class="ident">process_table_users</span></span>(<span>data, cursor)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Processes the users table data.</p>
+<p>Args:</p>
+<p><code>data</code>: The DataFrame containing users data</p>
+<p><code>cursor</code>: The database cursor</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_table_users(data, cursor):
+    &#34;&#34;&#34;
+    Processes the users table data.
+
+    Args:
+
+    `data`: The DataFrame containing users data
+
+    `cursor`: The database cursor
+    &#34;&#34;&#34;
+    # copy users records to the database table
+    users_data = data[TABLE[&#39;users&#39;]].drop_duplicates(
+        subset=[&#39;userId&#39;], keep=&#39;first&#39;)
+    copy_data(users_data, &#39;users&#39;, cursor)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="sparkify-pgsql" href="index.html">sparkify-pgsql</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="sparkify-pgsql.etl2.copy_data" href="#sparkify-pgsql.etl2.copy_data">copy_data</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.generate_user_id" href="#sparkify-pgsql.etl2.generate_user_id">generate_user_id</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.get_dataframe" href="#sparkify-pgsql.etl2.get_dataframe">get_dataframe</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.get_files" href="#sparkify-pgsql.etl2.get_files">get_files</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.get_song_artist_ids" href="#sparkify-pgsql.etl2.get_song_artist_ids">get_song_artist_ids</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.main" href="#sparkify-pgsql.etl2.main">main</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.process_data" href="#sparkify-pgsql.etl2.process_data">process_data</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.process_log_data" href="#sparkify-pgsql.etl2.process_log_data">process_log_data</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.process_song_data" href="#sparkify-pgsql.etl2.process_song_data">process_song_data</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.process_table_artists" href="#sparkify-pgsql.etl2.process_table_artists">process_table_artists</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.process_table_songplays" href="#sparkify-pgsql.etl2.process_table_songplays">process_table_songplays</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.process_table_songs" href="#sparkify-pgsql.etl2.process_table_songs">process_table_songs</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.process_table_time" href="#sparkify-pgsql.etl2.process_table_time">process_table_time</a></code></li>
+<li><code><a title="sparkify-pgsql.etl2.process_table_users" href="#sparkify-pgsql.etl2.process_table_users">process_table_users</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
