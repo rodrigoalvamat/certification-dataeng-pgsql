@@ -175,10 +175,10 @@ python -m etl2 --cloud
 ```
 <br/>
 
-| 5 Executions Mean (sec) | [etl.py](./etl.py) | [etl2.py](./etl2.py) |
-|-------------------------|--------------------|----------------------|
-| Local database          | 30.68              | 1.64                 |
-| Cloud database          | Pending            | Pending              |
+| 3 Executions Mean (sec) | [etl.py](./etl.py) | [etl2.py](./etl2.py) | Improvement       |
+|-------------------------|--------------------|----------------------|-------------------|
+| Local database          | 30.68              | 1.64                 | **18.7x** faster  |
+| Cloud database          | 6832.46            | 49.27                | **133.3x** faster |
 <br/>
 
 **Note:** These results can vary remarkably according to your local computer hardware and the cloud provider service.
