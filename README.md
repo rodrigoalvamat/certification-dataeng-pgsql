@@ -21,6 +21,7 @@ This new design solved the difficulty that the analytics team experienced when l
 - [Altair Viz 4.2.0](https://altair-viz.github.io) 
 - [Matplotlib 3.5.2](https://matplotlib.org)
 - [Pandas 1.4.2](https://pandas.pydata.org)
+- [Pdoc3 0.8.1](https://pdoc3.github.io/pdoc)
 - [Psycopg2 2.9.3](https://www.psycopg.org)
 - [SqlAlchemy 1.4.37](https://www.sqlalchemy.org)
 - [Streamlit 1.10.0](https://streamlit.io)
@@ -139,6 +140,7 @@ So we have a code file for **phase 1** - [etl.py](./etl.py) - and another for **
 1. **Batch ```copy_from``` an StringIO buffer:** The [psycopg2 copy_from](https://www.psycopg.org/docs/cursor.html) cursor method was selected based on the information presented in this [benchmark](https://naysan.ca/2020/05/09/pandas-to-postgresql-using-psycopg2-bulk-insert-performance-benchmark/). The figure below shows that this is the fastest operation of this library.
 
 ![psycopg2 copy_from benchmark](./images/benchmark.png)
+Image by **Naysan Saran** via [Bulk Insert Performance Benchmark](https://naysan.ca/2020/05/09/pandas-to-postgresql-using-psycopg2-bulk-insert-performance-benchmark/)
 <br/>
 <br/>
 
@@ -185,7 +187,7 @@ python -m etl2 --cloud
 
 ## Auto-generate API Documentation
 
-The [pdoc](https://pdoc3.github.io/pdoc/) documentation generator was used to output the [HTML docs](./docs/index.html) from the source code ```DOCSTRIGS```.
+The [pdoc](https://pdoc3.github.io/pdoc/) documentation generator was used to output the [HTML docs](https://htmlpreview.github.io/?https://github.com/rodrigoalvamat/sparkify-pgsql/blob/main/docs/index.html) from the source code ```DOCSTRIGS```.
 
 ## Database Schema Validation and Sanity Tests
 
