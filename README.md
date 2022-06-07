@@ -4,6 +4,8 @@
 >Author: Rodrigo de Alvarenga Mattos
 >
 >June 5, 2022
+>
+> [Data Engineering Nanodegree - Udacity](https://www.udacity.com/course/data-engineer-nanodegree--nd027)
 
 <br/>
 
