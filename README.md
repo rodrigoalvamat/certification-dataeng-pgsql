@@ -93,8 +93,8 @@ The figure below shows the database structure as an entity relationship diagram:
 The sample code below shows the main pipeline of the database creation process in the [create_tables.py](./create_tables.py) script:
 
 ```python
-drop_tables(cur, conn)
 drop_functions(cur, conn)
+drop_tables(cur, conn)
 drop_types(cur, conn)
 create_types(cur, conn)
 create_tables(cur, conn)
@@ -123,8 +123,8 @@ So we have a code file for **phase 1** - [etl.py](./etl.py) - and another for **
 
 | Process             | [etl.py](./etl.py)     | [etl2.py](./etl2.py)                       |
 |---------------------|------------------------|--------------------------------------------|
-| Process log files   | Sequential             | Single DataFrame concatenation             |
-| Process song files  | Sequential             | Single DataFrame concatenation             |
+| Process log files   | Loop through each file | DataFrame concatenation of all files       |
+| Process song files  | Loop through each file | DataFrame concatenation of all files       |
 | String Trim         | *none*                 | Full DataFrame transformation              |
 | Timestamp type cast | Pandas datetime        | Pandas datetime                            |
 | User ID type cast   | Pandas Int64           | Pandas Int64                               |

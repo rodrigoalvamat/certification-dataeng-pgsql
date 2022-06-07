@@ -1,8 +1,8 @@
 # DROP TYPES
 
-gender_type_drop = "DROP TYPE IF EXISTS GENDER"
-level_type_drop = "DROP TYPE IF EXISTS LEVEL"
-song_artist_type_drop = "DROP TYPE IF EXISTS SONG_ARTIST"
+gender_type_drop = "DROP TYPE IF EXISTS GENDER;"
+level_type_drop = "DROP TYPE IF EXISTS LEVEL;"
+song_artist_type_drop = "DROP TYPE IF EXISTS SONG_ARTIST;"
 
 # CREATE TYPES
 
@@ -19,15 +19,15 @@ CREATE TYPE SONG_ARTIST AS (
 
 # DROP TABLE IF EXISTS
 
-songplay_table_drop = "DROP TABLE IF EXISTS songplays"
-user_table_drop = "DROP TABLE IF EXISTS users"
-song_table_drop = "DROP TABLE IF EXISTS songs"
-artist_table_drop = "DROP TABLE IF EXISTS artists"
-time_table_drop = "DROP TABLE IF EXISTS time"
+songplay_table_drop = "DROP TABLE IF EXISTS songplays;"
+user_table_drop = "DROP TABLE IF EXISTS users;"
+song_table_drop = "DROP TABLE IF EXISTS songs;"
+artist_table_drop = "DROP TABLE IF EXISTS artists;"
+time_table_drop = "DROP TABLE IF EXISTS time;"
 
 # DROP FUNCTION IF EXISTS
 
-song_artist_ids_drop = "DROP FUNCTION IF EXISTS song_artist_ids"
+song_artist_ids_drop = "DROP FUNCTION IF EXISTS song_artist_ids;"
 
 # CREATE TABLES
 

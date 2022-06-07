@@ -186,8 +186,8 @@ def main(cloud):
         # create a cursor and connect to the database
         cur, conn = create_database(cloud)
         # execute all sql statements
-        drop_tables(cur, conn)
         drop_functions(cur, conn)
+        drop_tables(cur, conn)
         drop_types(cur, conn)
         create_types(cur, conn)
         create_tables(cur, conn)
