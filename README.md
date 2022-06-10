@@ -21,6 +21,7 @@ This new design solved the difficulty that the analytics team experienced when l
 
 - [Python 3.10](https://www.python.org) 
 - [Altair Viz 4.2.0](https://altair-viz.github.io) 
+- [Ipython SQL 0.3.9](https://pypi.org/project/ipython-sql)
 - [Matplotlib 3.5.2](https://matplotlib.org)
 - [Pandas 1.4.2](https://pandas.pydata.org)
 - [Pdoc3 0.8.1](https://pdoc3.github.io/pdoc)
@@ -28,6 +29,18 @@ This new design solved the difficulty that the analytics team experienced when l
 - [SqlAlchemy 1.4.37](https://www.sqlalchemy.org)
 - [Streamlit 1.10.0](https://streamlit.io)
 - [Wordcloud 1.8.1](https://github.com/amueller/word_cloud)
+<br/>
+<br/>
+
+## Docker Image
+
+Start the project container using the docker run command and specify the name of the image created:
+
+```console
+docker run --name datadiver --hostname localhost -p 5432:5432 -p 80:80 -d datadiverdev/postgres-conda-jupyter
+```
+
+Open JupyterLab url [http://localhost/lab](http://localhost/lab) in your browser to run the python scripts and the jupyter notebooks.
 <br/>
 <br/>
 
