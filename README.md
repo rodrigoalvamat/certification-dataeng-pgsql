@@ -34,7 +34,7 @@ This new design solved the difficulty that the analytics team experienced when l
 
 ## Docker Image
 
-Start the project container using the docker run command and specify the name of the image created:
+Start the project container using the docker run command:
 
 ```console
 docker run --name datadiver --hostname localhost -p 5432:5432 -p 80:80 -d datadiverdev/postgres-conda-jupyter
