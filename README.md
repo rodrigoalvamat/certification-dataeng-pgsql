@@ -13,7 +13,7 @@
 
 The goal of this project is to create a database solution optimized for queries and analysis of users' song play activities for the Sparkify service. 
 
-This new design solved the difficulty that the analytics team experienced when looking for information in the JSON log and metadata files.
+This new design solved the difficulty of performing analytical tasks with information from the JSON log and metadata files.
 <br/>
 <br/>
 
@@ -95,7 +95,7 @@ Open JupyterLab url [http://localhost/lab](http://localhost/lab) in your browser
 
 The database is modeled as a star schema that consists of a fact table (songplays) referencing four dimension tables (artists, songs, time, users), and some custom types have also been defined.
 
-All the SQL types and tables were defined in the [sql_queries.py](./sql_queries.py) file.
+All the SQL types and tables were defined in the [src/etl/sql_queries.py](./src/etl/sql_queries.py) file.
 
 The figure below shows the database structure as an entity relationship diagram:
 
@@ -105,7 +105,7 @@ The figure below shows the database structure as an entity relationship diagram:
 
 ## Creating the Database
 
-The sample code below shows the main pipeline of the database creation process in the [create_tables.py](./create_tables.py) script:
+The sample code below shows the main pipeline of the database creation process in the [src/etl/create_tables.py](./src/etl/create_tables.py) script:
 
 ```python
 drop_functions(cur, conn)
@@ -117,15 +117,15 @@ create_functions(cur, conn)
 ```
 <br/>
 
-*Note:* You should change the [create_tables.py](./create_tables.py) source code if you want to customize the database connection host, database name, username and password.
+*Note:* You should change the [src/etl/create_tables.py](./src/elt/create_tables.py) source code if you want to customize the database connection host, database name, username and password.
 
 **Run the command** below to create the database schema:
 
 ```bash
 # to create the schema in the local database
-python -m create_tables 
+python -m src/etl/create_tables 
 # to create the schema in the cloud database
-python -m create_tables --cloud
+python -m src/etl/create_tables --cloud
 ```
 <br/>
 <br/>
@@ -134,21 +134,21 @@ python -m create_tables --cloud
 
 The ETL processes were developed in **two phases**. The first one implements the **project requirements** as specified. The second one is a full code refactoring emphasizing **performance improvement** and adding some extra transformations.
 
-So we have a code file for **phase 1** - [etl.py](./etl.py) - and another for **phase 2** - [etl2.py](./etl2.py). Both codes are fully functional, but the second one is significantly faster and adds important transformations. The table below shows the sequence of the ETL pipeline processes:
+So we have a code file for **phase 1** - [src/etl/etl.py](./src/etl/etl.py) - and another for **phase 2** - [src/etl/etl2.py](./src/etl/etl2.py). Both codes are fully functional, but the second one is significantly faster and adds important transformations. The table below shows the sequence of the ETL pipeline processes:
 
-| Process             | [etl.py](./etl.py)     | [etl2.py](./etl2.py)                       |
-|---------------------|------------------------|--------------------------------------------|
-| Process log files   | Loop through each file | DataFrame concatenation of all files       |
-| Process song files  | Loop through each file | DataFrame concatenation of all files       |
-| String Trim         | *none*                 | Full DataFrame transformation              |
-| Timestamp type cast | Pandas datetime        | Pandas datetime                            |
-| User ID type cast   | Pandas Int64           | Pandas Int64                               |
-| User ID null values | *none*                 | Generated from user table data             |
-| SQL table inserts   | One db call per record | Batch copy_from an StringIO buffer **(1)** |
-| SQL songs query     | One db call per record | Batch select with stored procedure **(2)** |
+| Process             | [src/etl/etl.py](./src/etl/etl.py) | [src/etl/etl2.py](./src/etl/etl2.py)       |
+|---------------------|------------------------------------|--------------------------------------------|
+| Process log files   | Loop through each file             | DataFrame concatenation of all files       |
+| Process song files  | Loop through each file             | DataFrame concatenation of all files       |
+| String Trim         | *none*                             | Full DataFrame transformation              |
+| Timestamp type cast | Pandas datetime                    | Pandas datetime                            |
+| User ID type cast   | Pandas Int64                       | Pandas Int64                               |
+| User ID null values | *none*                             | Generated from user table data             |
+| SQL table inserts   | One db call per record             | Batch copy_from an StringIO buffer **(1)** |
+| SQL songs query     | One db call per record             | Batch select with stored procedure **(2)** |
 <br/>
 
-**Note:** Take a look at notebooks [etl.ipybn](./etl.ipynb) and [etl2.ipynb](./etl2.ipynb) to understand the step-by-step development of each ETL process described above.
+**Note:** Take a look at notebooks [src/etl/etl.ipybn](./src/etl/etl.ipynb) and [src/etl/etl2.ipynb](./src/etl/etl2.ipynb) to take a look at the step-by-step development of each ETL process described above.
 <br/>
 <br/>
 
@@ -179,21 +179,21 @@ $func$  LANGUAGE SQL STABLE;
 
 ```bash
 # first version
-python -m etl 
+python -m src/etl/etl 
 # first version with cloud db
-python -m etl --cloud
+python -m src/etl/etl --cloud
 
 # second version with improved performance
-python -m etl2
+python -m src/etl/etl2
 # second version with improved performance and cloud db
-python -m etl2 --cloud
+python -m src/etl/etl2 --cloud
 ```
 <br/>
 
-| 3 Executions Mean (sec) | [etl.py](./etl.py) | [etl2.py](./etl2.py) | Improvement       |
-|-------------------------|--------------------|----------------------|-------------------|
-| Local database          | 30.68              | 1.64                 | **18.7x** faster  |
-| Cloud database          | 6832.46            | 49.27                | **133.3x** faster |
+| 3 Executions Mean (sec) | [src/etl/etl.py](./src/etl/etl.py) | [src/etl/etl2.py](./src/etl/etl2.py) | Improvement       |
+|-------------------------|------------------------------------|--------------------------------------|-------------------|
+| Local database          | 30.68                              | 1.64                                 | **18.7x** faster  |
+| Cloud database          | 6832.46                            | 49.27                                | **133.3x** faster |
 <br/>
 
 **Note:** These results can vary remarkably according to your local computer hardware and the cloud provider service.
@@ -206,7 +206,7 @@ The [pdoc](https://pdoc3.github.io/pdoc/) documentation generator was used to ou
 
 ## Database Schema Validation and Sanity Tests
 
-The [test.ipynb](./test.ipynb) notebook defines a set of test to validate the database table schema, data types, column constraints, primary keys and upsert conflict checks. You should run the **tests after** the execution of the [create_tables.py](./create_tables.py) and [etl2.py](./etl2.py) (or [etl.py](./etl.py)) scripts.
+The [src/etl/test.ipynb](./src/etl/test.ipynb) notebook defines a set of test to validate the database table schema, data types, column constraints, primary keys and upsert conflict checks. You should run the **tests after** the execution of the [src/etl/create_tables.py](./src/etl/create_tables.py) and [src/etl/etl2.py](./src/etl/etl2.py) (or [src/etl/etl.py](./src/etl/etl.py)) scripts.
 <br/>
 <br/>
 
@@ -217,8 +217,8 @@ The [Streamlit](https://streamlit.io) application framework was used to build an
 | Feature or Resource   | URL                                                                                               |
 |-----------------------|---------------------------------------------------------------------------------------------------|
 | Dashboard Application | [www.datadiver.dev](https://datadiver.dev)                                                        |
-| Github source code    | [Github repository](https://github.com/rodrigoalvamat/datadiver)                                  |
-| SQL Analytics         | [queries.py](https://github.com/rodrigoalvamat/datadiver/blob/main/sparkify/dashboard/queries.py) |
+| Dashboard Source Code | [Source](./src/dashboard)                                                                         |
+| SQL Analytics         | [queries.py](./src/dashboard/queries.py) |
 | Cloud PaaS            | [Heroku](https://heroku.com)                                                                      |
 | Cloud PostgresSQL     | [ElephantSQL](https://www.elephantsql.com/)                                                       |
 <br/>
