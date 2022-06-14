@@ -57,7 +57,7 @@ RUN echo "source /opt/conda/etc/profile.d/conda.sh" >> $HOME/.bashrc && \
     echo "conda activate py310" >> $HOME/.bashrc
 
 # create project workspace
-RUN mkdir -p $HOME/workspace $HOME/.jupyter
+RUN mkdir -p $HOME/.jupyter $HOME/workspace
 COPY ./docker/jupyter_notebook_config.py $HOME/.jupyter/jupyter_notebook_config.py
 WORKDIR $HOME/workspace
 
@@ -66,7 +66,8 @@ RUN mkdir -p ./data/ ./docs/ ./images/
 COPY ./data/ ./data/
 COPY ./docs/ ./docs/
 COPY ./images/ ./images/
-COPY ./create_tables.py ./etl.py ./etl.ipynb ./etl2.py /etl2.ipynb ./sql_queries.py ./test.ipynb ./README.md ./
+COPY ./src/etl ./
+COPY ./README.md ./
 RUN sudo chown -R $USER:$USER $HOME
 
 
