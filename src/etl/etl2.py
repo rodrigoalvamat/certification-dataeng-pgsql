@@ -379,8 +379,8 @@ def main(cloud):
         # connect to the database
         conn = psycopg2.connect(dbconf)
         # process JSON files
-        process_data(dir='data/song_data', conn=conn, func=process_song_data)
-        process_data(dir='data/log_data', conn=conn, func=process_log_data)
+        process_data(dir='../data/song_data', conn=conn, func=process_song_data)
+        process_data(dir='../data/log_data', conn=conn, func=process_log_data)
         # close the connection
         conn.close()
     except psycopg2.Error as e:
