@@ -119,7 +119,7 @@ create_functions(cur, conn)
 ```
 <br/>
 
-*Note:* You should change the [src/etl/create_tables.py](./src/elt/create_tables.py) source code if you want to customize the database connection host, database name, username and password.
+*Note:* You should change the [src/etl/create_tables.py](./src/etl/create_tables.py) source code if you want to customize the database connection host, database name, username and password.
 
 **Run the command** below to create the database schema:
 
