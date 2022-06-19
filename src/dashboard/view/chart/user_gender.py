@@ -2,22 +2,19 @@
 import streamlit as st
 # vizulization libs
 import altair as alt
-# style libs
-from styles import *
+# view libs
+from dashboard.view.grid.cell import GridCell
 
 
-class UserGender:
+class UserGender(GridCell):
 
     def __init__(self, state):
-        self.state = state
+        super().__init__(state,
+                         f"{state.user['count']} {state.user['label']} active users",
+                         "By gender"
+                         )
 
-    def render(self):
-        header = f"""
-        <h5 style="{column_header_style}">{self.state.user['count']} {self.state.user['label']} active users</h5>
-        <h4 style="{column_subheader_styles}">By gender</h4>
-        """
-        st.markdown(header, unsafe_allow_html=True)
-
+    def render_body(self):
         graph = alt.Chart(self.state.user['data']).mark_arc(innerRadius=50).encode(
             theta=alt.Theta(field='gender', type='nominal', aggregate='count'),
             color=alt.Color(field='gender', type='nominal',

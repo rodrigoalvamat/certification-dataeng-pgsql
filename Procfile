@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run src/dashboard/app.py cloud
+web: sh setup.sh && streamlit run src/app.py cloud

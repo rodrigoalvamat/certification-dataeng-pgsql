@@ -2,22 +2,19 @@
 import streamlit as st
 # vizulization libs
 import altair as alt
-# style libs
-from styles import *
+# view libs
+from dashboard.view.grid.cell import GridCell
 
 
-class UserSongplays:
+class UserSongplays(GridCell):
 
     def __init__(self, state):
-        self.state = state
+        super().__init__(state,
+                         f"{state.user['count']} {state.user['label']} active users",
+                         "By songs played"
+                         )
 
-    def render(self):
-        header = f"""
-        <h5 style="{column_header_style}">{self.state.user['count']} {self.state.user['label']} active users</h5>
-        <h4 style="{column_subheader_styles}">By songs played</h4>
-        """
-        st.markdown(header, unsafe_allow_html=True)
-
+    def render_body(self):
         graph = alt.Chart(self.state.user['data']).mark_bar().encode(
             x='plays',
             y=alt.Y('user:N', sort=self.state.user['sort']),

@@ -3,13 +3,11 @@ import glob
 import os
 import sys
 from timeit import default_timer as timer
-
-# etl/eda libs
+# data libs
 import pandas as pd
-
 # sql libs
 import psycopg2
-from sql_queries import *
+from etl.sql_queries import *
 
 
 def process_song_file(cur, filepath):
@@ -172,11 +170,13 @@ def main(cloud):
         dbconf = "host=127.0.0.1 dbname=sparkifydb user=student password=student"
     
     try:
+        # get the data directory path
+        data_dir = os.path.abspath(os.path.realpath(__file__) + '/../../../data')
         # connect to the database
         conn = psycopg2.connect(dbconf)
         # process JSON files
-        process_data(conn, filepath='../data/song_data', func=process_song_file)
-        process_data(conn, filepath='../data/log_data', func=process_log_file)
+        process_data(conn, filepath=f'{data_dir}/song_data', func=process_song_file)
+        process_data(conn, filepath=f'{data_dir}/log_data', func=process_log_file)
         # close the connection
         conn.close()
     except psycopg2.Error as e:

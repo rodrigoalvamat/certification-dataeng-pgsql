@@ -3,22 +3,16 @@ import streamlit as st
 # vizulization libs
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
-# style libs
-from styles import *
+# view libs
+from dashboard.view.grid.cell import GridCell
 
 
-class SongWord:
+class SongWord(GridCell):
 
     def __init__(self, state):
-        self.state = state
+        super().__init__(state, "All song titles", "Word cloud")
 
-    def render(self):
-        header = f"""
-        <h5 style="{column_header_style}">All song titles</h5>
-        <h4 style="{column_subheader_styles}">Word cloud</h4>
-        """
-        st.markdown(header, unsafe_allow_html=True)
-
+    def render_body(self):
         text = ' '.join(song for song in self.state.song['data']['title'])
         text = text.replace('Album', '').replace('Version', '')
         wordcloud = WordCloud(background_color='white',

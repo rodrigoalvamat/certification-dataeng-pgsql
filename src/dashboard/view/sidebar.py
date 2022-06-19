@@ -1,7 +1,7 @@
 # app libs
 import streamlit as st
 # style libs
-from styles import *
+from dashboard.view.styles import *
 
 
 class Sidebar:

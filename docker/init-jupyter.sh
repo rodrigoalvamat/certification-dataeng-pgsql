@@ -1,13 +1,7 @@
 #!/bin/bash
 
-# load conda environment
-set -euo pipefail
-source /opt/conda/etc/profile.d/conda.sh
+# set jupyter environment 
+export PATH="$PATH:$HOME/.local/bin"
 
-# activate conda environment
-set +euo pipefail
-conda activate py310
-
-# start jupyter lab server
-set -euo pipefail
+# start jupyter server
 jupyter-lab --ip=* --port=80 --notebook-dir=/home/"$USER"/workspace --no-browser

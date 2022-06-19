@@ -11,7 +11,7 @@ SCRIPT_PATH="$(readlink -f "${SCRIPT_PATH}")"
 SCRIPT_DIR="$(cd -P "$(dirname -- "${SCRIPT_PATH}")" >/dev/null 2>&1 && pwd)"
 
 # docker image name
-IMAGE="datadiverdev/postgres-conda-jupyter"
+IMAGE="datadiverdev/postgres-jupyter"
 
 # docker build paths
 BUILD_DIR=""${SCRIPT_DIR}"/.."

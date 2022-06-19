@@ -2,22 +2,16 @@
 import streamlit as st
 # vizulization libs
 import pydeck as pdk
-# style libs
-from styles import *
+# view libs
+from dashboard.view.grid.cell import GridCell
 
 
-class ArtistLocation:
+class ArtistLocation(GridCell):
 
     def __init__(self, state):
-        self.state = state
+        super().__init__(state, "All artists", "Location coordinates")
 
-    def render(self):
-        header = f"""
-        <h5 style="{column_header_style}">All artists</h5>
-        <h4 style="{column_subheader_styles}">Location coordinates</h4>
-        """
-        st.markdown(header, unsafe_allow_html=True)
-
+    def render_body(self):
         data = self.state.artist['data']
         data = data.loc[data['latitude'].notnull() &
                         data['longitude'].notnull()]

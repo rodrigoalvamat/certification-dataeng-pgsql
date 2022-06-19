@@ -2,7 +2,7 @@
 import streamlit as st
 
 
-class StateManager:
+class StateController:
 
     def __init__(self, database):
         self.__init_artist(database.artists_by_location)

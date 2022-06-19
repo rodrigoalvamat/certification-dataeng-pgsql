@@ -2,10 +2,9 @@
 import os
 import sys
 from timeit import default_timer as timer
-
 # sql libs
 import psycopg2
-from sql_queries import *
+from etl.sql_queries import *
 
 
 def create_database(cloud):

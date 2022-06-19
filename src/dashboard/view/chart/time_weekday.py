@@ -2,22 +2,16 @@
 import streamlit as st
 # vizulization libs
 import altair as alt
-# style libs
-from styles import *
+# view libs
+from dashboard.view.grid.cell import GridCell
 
 
-class TimeWeekday:
+class TimeWeekday(GridCell):
 
     def __init__(self, state):
-        self.state = state
+        super().__init__(state, "All songplays", "By weekdays")
 
-    def render(self):
-        header = f"""
-        <h5 style="{column_header_style}">All songplays</h5>
-        <h4 style="{column_subheader_styles}">By weekdays</h4>
-        """
-        st.markdown(header, unsafe_allow_html=True)
-
+    def render_body(self):
         data = self.state.time['data']
         data = data.groupby(by=['weekday'], as_index=False).aggregate(
             {'timestamp': 'count'})

@@ -4,14 +4,11 @@ from io import StringIO
 import os
 import sys
 from timeit import default_timer as timer
-
-# etl/eda libs
+# data libs
 import pandas as pd
-
 # sql libs
 import psycopg2
-from sql_queries import *
-
+from etl.sql_queries import *
 # suppress warnings
 import warnings
 warnings.filterwarnings("ignore")
@@ -376,11 +373,15 @@ def main(cloud):
         dbconf = "host=127.0.0.1 dbname=sparkifydb user=student password=student"
 
     try:
+        # get the data directory path
+        data_dir = os.path.abspath(os.path.realpath(__file__) + '/../../../data')
         # connect to the database
         conn = psycopg2.connect(dbconf)
         # process JSON files
-        process_data(dir='../data/song_data', conn=conn, func=process_song_data)
-        process_data(dir='../data/log_data', conn=conn, func=process_log_data)
+        print(f'{data_dir}/song_data')
+        print(f'{data_dir}/log_data')
+        process_data(dir=f'{data_dir}/song_data', conn=conn, func=process_song_data)
+        process_data(dir=f'{data_dir}/log_data', conn=conn, func=process_log_data)
         # close the connection
         conn.close()
     except psycopg2.Error as e:
