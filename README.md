@@ -151,7 +151,7 @@ So we have a code file for **phase 1** - [src/etl/etl.py](./src/etl/etl.py) - an
 | SQL songs query     | One db call per record             | Batch select with stored procedure **(2)** |
 <br/>
 
-**Note:** Take a look at notebooks [src/etl/etl.ipybn](./src/etl/etl.ipynb) and [src/etl/etl2.ipynb](./src/etl/etl2.ipynb) to take a look at the step-by-step development of each ETL process described above.
+**Note:** Take a look at notebooks [src/etl/etl.ipybn](./src/etl/etl.ipynb) and [src/etl/etl2.ipynb](./src/etl/etl2.ipynb) to see the step-by-step development of each ETL process described above.
 
 <br/>
 
@@ -207,7 +207,7 @@ python -m etl.etl2 --cloud
 
 ## Auto-generate API Documentation
 
-The [pdoc](https://pdoc3.github.io/pdoc/) documentation generator was used to output the [HTML docs](https://htmlpreview.github.io/?https://github.com/rodrigoalvamat/sparkify-pgsql/blob/main/docs/index.html) from the source code ```DOCSTRIGS```.
+The [pdoc](https://pdoc3.github.io/pdoc/) documentation generator was used to output the [HTML docs](https://htmlpreview.github.io/?https://github.com/rodrigoalvamat/datadiver-pgsql/blob/main/docs/index.html) from the source code ```DOCSTRIGS```.
 
 ## Database Schema Validation and Sanity Tests
 

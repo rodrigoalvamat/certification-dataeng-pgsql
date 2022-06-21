@@ -56,6 +56,7 @@ COPY ./data/ ./data/
 COPY ./docs/ ./docs/
 COPY ./images/ ./images/
 COPY ./src/ ./src/
+COPY ./LICENSE ./
 COPY ./README.md ./
 RUN sudo chown -R $USER:$USER $HOME
 
