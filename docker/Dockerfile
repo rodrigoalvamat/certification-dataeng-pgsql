@@ -15,8 +15,10 @@ RUN DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends ca-certificates wget curl gnupg2 lsb-release sudo && \
     wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -c -s)-pgdg main" >> /etc/apt/sources.list.d/pgdg.list && \
-    apt-get update && \
-    apt-get install -y postgresql postgresql-client postgresql-contrib python3-pip python3-dev python3-setuptools
+    curl https://install.citusdata.com/community/deb.sh > add-citus-repo.sh && \
+    bash add-citus-repo.sh && \
+    rm add-citus-repo.sh && \
+    apt-get install -y postgresql postgresql-client postgresql-contrib postgresql-14-citus-11.0 python3-pip python3-dev python3-setuptools
     
 # create user
 ENV USER=developer
@@ -60,7 +62,6 @@ COPY ./LICENSE ./
 COPY ./README.md ./
 RUN sudo chown -R $USER:$USER $HOME
 
-
 # set postgres environment variables
 ENV POSTGRES_DB=studentdb
 ENV POSTGRES_USER=student
@@ -69,14 +70,16 @@ ENV POSTGRES_PASSWORD=student
 # set postgres user
 USER postgres
 
+# set postgres configuration
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/14/main/pg_hba.conf && \
+    sed -i /etc/postgresql/14/main/postgresql.conf -re "s/^#shared_preload_libraries = ''/shared_preload_libraries = 'citus'/g" && \
+    sed -i /etc/postgresql/14/main/postgresql.conf -re "s/^#listen_addresses = 'localhost'/listen_addresses = '*'/g" 
+
 # create default postgres user and database
 RUN /etc/init.d/postgresql start && \
     psql --command "CREATE USER ${POSTGRES_USER} WITH SUPERUSER PASSWORD '${POSTGRES_PASSWORD}';" && \
-    createdb -O $POSTGRES_USER $POSTGRES_DB
-
-# set postgres configuration
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/14/main/pg_hba.conf && \
-    echo "listen_addresses='*'" >> /etc/postgresql/14/main/postgresql.conf
+    psql --command "CREATE EXTENSION citus;" && \
+    createdb -O $POSTGRES_USER $POSTGRES_DB 
 
 # server ports
 EXPOSE 5432
